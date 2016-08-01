@@ -51,6 +51,128 @@
         <pre class="debug"></pre>
         <script>
             // your code goes here ...
+            window.onload = function() {
+
+              // Override default submit behavior
+              var buttonAdd = document.getElementsByClassName('add')[0];
+              buttonAdd.setAttribute('type', 'button');
+
+              // Click event for add button
+              buttonAdd.addEventListener('click', addMember, false);
+
+              // Submit event for form
+              form = document.getElementsByTagName('form')[0]
+              form.addEventListener('submit', submitForm, false);
+
+              // Set up an array to hold the household
+              household = new Array();
+
+              // Target pre .debug
+              debug = document.getElementsByClassName('debug')[0];
+
+              // Update the household display
+              displayHousehold();
+
+            }
+
+
+
+            function validate() {
+
+              // Age is required
+              if (document.getElementsByName('age')[0].value == "") {
+                alert('Age is required.');
+                document.getElementsByName('age')[0].focus();
+                return false;
+              }
+
+              // Age must be > 0
+              if (document.getElementsByName('age')[0].value <= 0) {
+                alert('Age must be greater than zero.');
+                document.getElementsByName('age')[0].focus();
+                return false;
+              }
+
+              // Relationship is required
+              if (document.getElementsByName('rel')[0].value == "") {
+                alert('Relationship is required.');
+                document.getElementsByName('rel')[0].focus();
+                return false;
+              }
+
+              return true;
+
+            }
+
+
+
+            function addMember() {
+
+              // Check to make entries are validated before proceeding
+              if (validate()) {
+
+                // Gather form data
+                newMember = [
+                  document.getElementsByName('age')[0].value,
+                  document.getElementsByName('rel')[0].value,
+                  document.getElementsByName('smoker')[0].checked,
+                ]
+
+                // Add new member to household array
+                household.push(newMember);
+
+                // Update the household display
+                displayHousehold();
+              };
+            }
+
+
+
+            function removeMember(i) {
+
+              // Remove member from household
+              household.splice(i, 1);
+
+              // Update the household display
+              displayHousehold();
+            }
+
+
+
+            function displayHousehold() {
+
+              // Target the household display element
+              householdList = document.getElementsByClassName('household')[0];
+
+              // Clear all existing child elements
+              while (householdList.firstChild) {
+                householdList.removeChild(householdList.firstChild);
+              }
+
+              // Loop through the household array and display
+              for (var i = 0; i < household.length; i++) {
+                removeButtonMarkup = '<button type="button" onClick="removeMember(' + i + ')">Remove</button>&nbsp;';
+                householdList.appendChild(document.createElement('li')).innerHTML = removeButtonMarkup + JSON.stringify(household[i], null, 4);
+              }
+
+              // Output household to pre .debug
+              debug.innerHTML = JSON.stringify(household, null, 4);
+
+            }
+
+
+
+            function submitForm() {
+
+              // Create a new xhr object
+              var xhr = new XMLHttpRequest();
+              xhr.open(form.method, form.action);
+              xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+              // Send JSON
+              xhr.send(JSON.stringify(household));
+            }
+
         </script>
     </body>
 </html>
